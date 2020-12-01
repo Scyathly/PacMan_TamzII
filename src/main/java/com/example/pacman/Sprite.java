@@ -2,43 +2,56 @@ package com.example.pacman;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 
 public class Sprite {
 
-    private double x = 0;
-    private double y = 0;
-    private double xVel = 0;
-    private double yVel = 0;
+    protected int width;
+    protected int height;
+    protected int x;
+    protected int y;
 
-    private PacmanView view;
-    private Bitmap bmp;
+    protected PacmanView view;
+    protected Bitmap bmp;
 
-    public Sprite(PacmanView view, Bitmap bmp){
+    enum SpriteType {FLOOR, SOLID, FOOD, BIG_FOOD, PLAYER, GHOST}
+
+    protected SpriteType type;
+
+    public Sprite(PacmanView view, Bitmap bmp, int x, int y, int width, int height, SpriteType type){
         this.view = view;
         this.bmp = bmp;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.type = type;
     }
 
-    public void Update(){
-    }
-
-    public void setX(double x){
+    public void setX(int x){
         this.x = x;
     }
 
-    public void setY(double y){
+    public void setY(int y){
         this.y = y;
     }
 
-    public double getX(){
+    public int getX(){
         return x;
     }
 
-    public double getY(){
+    public int getY(){
         return y;
     }
 
-    public void Draw(Canvas canvas){
-        canvas.drawBitmap(bmp, (int)x, (int)y, null);
+    public int getWidth(){return width;}
+    public int getHeight(){return height;}
+
+    public void update(double delta){
+        return;
     }
 
+    public void draw(Canvas canvas){
+        canvas.drawBitmap(bmp, null, new Rect(x, y, width, height), null);
+    }
 }

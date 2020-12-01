@@ -42,7 +42,6 @@ public class GameThread extends Thread {
                 fps = 0;
             }
 
-
             view.update(delta);
 
             Canvas c = null;
@@ -56,8 +55,6 @@ public class GameThread extends Thread {
                     view.getHolder().unlockCanvasAndPost(c);
                 }
             }
-
-
 
             try {
                 if(((lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000) > 0) Thread.sleep( (lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000 );

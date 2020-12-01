@@ -1,13 +1,15 @@
 package com.example.pacman;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -15,63 +17,43 @@ import java.util.ArrayList;
 
 public class PacmanView extends SurfaceView {
 
-    private Bitmap bmp[];
     private SurfaceHolder holder;
     private GameThread mainThread;
 
-    int MapRows = 20;
-    int MapCols = 10;
+    private int MapRows = 20;
+    private int MapCols = 10;
 
-    private int level[] = {
-            1,1,1,1,1,1,1,1,1,1,
-            1,0,0,0,0,0,0,0,0,1,
-            1,0,1,0,0,0,0,0,1,1,
-            1,0,1,0,0,0,0,0,0,1,
-            1,0,1,1,1,1,1,0,0,1,
-            1,0,0,0,0,0,0,0,0,1,
-            1,0,1,0,0,0,0,0,0,1,
-            1,0,1,1,1,1,1,0,0,1,
-            1,0,1,0,0,0,0,0,0,1,
-            1,0,0,0,0,0,0,0,0,1,
-            1,1,1,1,1,1,1,1,0,1,
-            1,0,0,0,0,0,0,0,0,1,
-            1,0,0,0,0,0,0,0,0,1,
-            1,0,1,1,1,1,1,0,0,1,
-            1,0,0,0,0,0,1,0,0,1,
-            1,0,1,1,1,1,1,0,0,1,
-            1,0,1,0,0,0,0,0,0,1,
-            1,0,1,1,1,1,1,0,0,1,
-            1,0,0,0,0,0,0,0,0,1,
-            1,1,1,1,1,1,1,1,1,1
-    };
+    private int colWidth;
+    private int colHeight;
 
-    int width = 80;
-    int height = 80;
+    private PacLevel map;
 
-    private ArrayList<Sprite> sprites = new ArrayList<Sprite>();
+    private Entity.direction dir = Entity.direction.LEFT;
 
+    private ArrayList<Entity> ghosts = new ArrayList<Entity>();
+
+    PacmanView p;
+
+    @SuppressLint("ClickableViewAccessibility")
     public PacmanView(Context context) {
         super(context);
 
         mainThread = new GameThread(this);
 
-        bmp = new Bitmap[6];
-
-        bmp[0] = BitmapFactory.decodeResource(getResources(), R.drawable.empty);
-        bmp[1] = BitmapFactory.decodeResource(getResources(), R.drawable.wall01);
-
         holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
+
+                map = new PacLevel(p, colWidth, colHeight);
+                ghosts = map.getGhosts();
+
                 mainThread.setRunning(true);
                 mainThread.start();
             }
 
             @Override
-            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
-            }
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) { }
 
             @Override
             public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
@@ -87,12 +69,38 @@ public class PacmanView extends SurfaceView {
                 }
             }
         });
+
+        this.setOnTouchListener(new SwipeListener(context) {
+            @Override
+            public void onSwipeTop() {
+                dir = Entity.direction.UP;
+                Toast.makeText(context, "Swipe UP", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onSwipeRight() {
+                dir = Entity.direction.RIGHT;
+                Toast.makeText(context, "Swipe RIGHT", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onSwipeLeft() {
+                dir = Entity.direction.LEFT;
+                Toast.makeText(context, "Swipe LEFT", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onSwipeBottom() {
+                dir = Entity.direction.DOWN;
+                Toast.makeText(context, "Swipe DOWN", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        p = this;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        width = w / MapCols;
-        height = h / MapRows;
+        colWidth = w / MapCols;
+        colHeight = h / MapRows;
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -101,23 +109,52 @@ public class PacmanView extends SurfaceView {
         if(canvas != null){
             canvas.drawColor(Color.BLACK);
 
-            for (int i = 0; i < MapRows; i++) {
-                for (int j = 0; j < MapCols; j++) {
-                    canvas.drawBitmap(bmp[level[i*10 + j]], null,
-                            new Rect(j*width, i*height,(j+1)*width, (i+1)*height), null);
-                }
-            }
+            map.drawMap(canvas);
 
-            for(Sprite s : sprites){
-                s.Draw(canvas);
+            for(Sprite s : ghosts){
+                s.draw(canvas);
             }
 
         }
     }
 
     public void update(double delta){
-        for(Sprite s : sprites){
-            s.Update();
+        for(Entity g : ghosts){
+
+            if(!g.isMoving()){
+                switch (dir){
+                    case LEFT:{
+                        if(map.getTile(g.x - colWidth, g.y).type != Sprite.SpriteType.SOLID){
+                            g.move(Entity.direction.LEFT, map.getTile(g.x -colWidth,g.y));
+                        }
+                        break;
+                    }
+                    case UP:{
+                        if(map.getTile(g.x, g.y - colHeight).type != Sprite.SpriteType.SOLID){
+                            g.move(Entity.direction.UP, map.getTile(g.x, g.y - colHeight));
+                        }
+                        break;
+                    }
+                    case DOWN:{
+                        if(map.getTile(g.x , g.y + colHeight).type != Sprite.SpriteType.SOLID){
+                            g.move(Entity.direction.DOWN, map.getTile(g.x, g.y + colHeight));
+                        }
+                        break;
+                    }
+                    case RIGHT:{
+                        if(map.getTile(g.x + colWidth, g.y).type != Sprite.SpriteType.SOLID){
+                            g.move(Entity.direction.RIGHT, map.getTile(g.x + colWidth, g.y));
+                        }
+                        break;
+                    }
+                }
+
+
+            }
+
+            g.update(delta);
         }
+
     }
+
 }
