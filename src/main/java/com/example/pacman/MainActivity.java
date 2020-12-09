@@ -2,43 +2,68 @@ package com.example.pacman;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final int REQUEST_CODE = 1;
+    private int levelNumber = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        goFullscreen(this);
+
         setContentView(R.layout.activity_main);
 
-        Button clickButton1 = (Button) findViewById(R.id.btn1);
-        clickButton1.setOnClickListener( new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, GameActivity.class);
-                MainActivity.this.startActivity(myIntent);
-            }
+        Button clickButton1 = findViewById(R.id.btn1);
+        clickButton1.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, GameActivity.class);
+            myIntent.putExtra("LevelNumber", levelNumber);
+            startActivity(myIntent);
         });
 
-        Button clickButton2 = (Button) findViewById(R.id.btn2);
-        clickButton2.setOnClickListener( new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-            }
+        Button clickButton2 = findViewById(R.id.btn2);
+        clickButton2.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, LevelSelectActivity.class);
+            startActivityForResult(myIntent, REQUEST_CODE);
         });
 
-        Button clickButton3 = (Button) findViewById(R.id.btn3);
-        clickButton3.setOnClickListener( new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-            }
+        Button clickButton3 = findViewById(R.id.btn3);
+        clickButton3.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, HighScoresActivity.class);
+            startActivity(myIntent);
         });
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                levelNumber = data.getIntExtra("LevelNumber", 0);
+            }
+        }
+    }
+
+    public static void goFullscreen(AppCompatActivity v){
+        v.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        try
+        {
+            v.getSupportActionBar().hide();
+        }
+        catch (NullPointerException e){}
     }
 }

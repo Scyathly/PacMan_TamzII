@@ -2,14 +2,13 @@ package com.example.pacman;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
-import android.view.MotionEvent;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.media.SoundPool;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -20,33 +19,52 @@ public class PacmanView extends SurfaceView {
     private SurfaceHolder holder;
     private GameThread mainThread;
 
+    private int levelNumber;
+
     private int MapRows = 20;
     private int MapCols = 10;
+
+    private SoundPool sp;
+    private int idEating;
 
     private int colWidth;
     private int colHeight;
 
     private PacLevel map;
 
-    private Entity.direction dir = Entity.direction.LEFT;
+    private ArrayList<Entity> ghosts;
 
-    private ArrayList<Entity> ghosts = new ArrayList<Entity>();
+    private ArrayList<Food> food;
+
+    private Entity player;
+
+    private double time = 0;
+    private int points = 0;
+
 
     PacmanView p;
 
     @SuppressLint("ClickableViewAccessibility")
-    public PacmanView(Context context) {
+    public PacmanView(Context context, int levelNumber) {
         super(context);
+
+        this.levelNumber = levelNumber;
 
         mainThread = new GameThread(this);
 
         holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
+
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
 
-                map = new PacLevel(p, colWidth, colHeight);
+                sp = new SoundPool.Builder().setMaxStreams(4).build();
+                idEating = sp.load(context, R.raw.munch, 1);
+
+                map = new PacLevel(p, colWidth, colHeight, levelNumber);
                 ghosts = map.getGhosts();
+                food = map.getFood();
+                player = map.getPlayer();
 
                 mainThread.setRunning(true);
                 mainThread.start();
@@ -67,29 +85,26 @@ public class PacmanView extends SurfaceView {
 
                     }
                 }
+                sp.release();
             }
         });
 
         this.setOnTouchListener(new SwipeListener(context) {
             @Override
             public void onSwipeTop() {
-                dir = Entity.direction.UP;
-                Toast.makeText(context, "Swipe UP", Toast.LENGTH_SHORT).show();
+                player.setDirectionBuffer(Entity.direction.UP);
             }
             @Override
             public void onSwipeRight() {
-                dir = Entity.direction.RIGHT;
-                Toast.makeText(context, "Swipe RIGHT", Toast.LENGTH_SHORT).show();
+                player.setDirectionBuffer(Entity.direction.RIGHT);
             }
             @Override
             public void onSwipeLeft() {
-                dir = Entity.direction.LEFT;
-                Toast.makeText(context, "Swipe LEFT", Toast.LENGTH_SHORT).show();
+                player.setDirectionBuffer(Entity.direction.LEFT);
             }
             @Override
             public void onSwipeBottom() {
-                dir = Entity.direction.DOWN;
-                Toast.makeText(context, "Swipe DOWN", Toast.LENGTH_SHORT).show();
+                player.setDirectionBuffer(Entity.direction.DOWN);
             }
 
         });
@@ -107,9 +122,15 @@ public class PacmanView extends SurfaceView {
     @Override
     protected void onDraw(Canvas canvas) {
         if(canvas != null){
-            canvas.drawColor(Color.BLACK);
 
+            canvas.drawColor(Color.BLACK);
             map.drawMap(canvas);
+
+            player.draw(canvas);
+
+            for(Food f: food){
+               f.draw(canvas);
+            }
 
             for(Sprite s : ghosts){
                 s.draw(canvas);
@@ -118,43 +139,145 @@ public class PacmanView extends SurfaceView {
         }
     }
 
-    public void update(double delta){
-        for(Entity g : ghosts){
+    public void endGame(Canvas canvas, boolean won){
+        drawEnd(canvas, won);
 
-            if(!g.isMoving()){
-                switch (dir){
-                    case LEFT:{
-                        if(map.getTile(g.x - colWidth, g.y).type != Sprite.SpriteType.SOLID){
-                            g.move(Entity.direction.LEFT, map.getTile(g.x -colWidth,g.y));
+        ScoreUpdater su = new ScoreUpdater(getContext());
+
+        double roundedTime = (double) Math.round(time /1000 * 100) / 100;
+        su.updateScore(points, roundedTime, levelNumber);
+    }
+
+    public void drawEnd(Canvas canvas, boolean won){
+        Paint p = new Paint();
+
+        Rect alphaRec = new Rect(0, 0, getWidth(), getHeight());
+        p.setColor(Color.WHITE);
+        p.setStyle(Paint.Style.FILL);
+        p.setAlpha(200);
+        canvas.drawRect(alphaRec, p);
+
+        p.setTextAlign(Paint.Align.CENTER);
+        p.setColor(Color.BLACK);
+        p.setTextSize(90);
+
+        int xPos = (canvas.getWidth() / 2);
+        int yPos = (int) ((canvas.getHeight() / 2) - ((p.descent() + p.ascent()) / 2)) - 90;
+
+        if(won)
+            canvas.drawText("You Won!", xPos, yPos, p);
+        else
+            canvas.drawText("You Lost!", xPos, yPos, p);
+
+        canvas.drawText("Your score: " + points, xPos, yPos + 90, p);
+        double roundedTime = (double) Math.round(time /1000 * 100) / 100;
+        canvas.drawText("Time: " + roundedTime + "s", xPos, yPos + 180, p);
+    }
+
+    public int update(double delta){
+
+        if(!player.isMoving()){
+            switch (player.getDirectionBuffer()){
+                case LEFT:{
+                    if(map.getTile(player.x - colWidth, player.y).type != Sprite.SpriteType.SOLID){
+                        player.move(map.getTile(player.x -colWidth,player.y));
+                        player.setDirection(player.getDirectionBuffer());
+                    }
+                    break;
+                }
+                case UP:{
+                    if(map.getTile(player.x, player.y - colHeight).type != Sprite.SpriteType.SOLID){
+                        player.move(map.getTile(player.x, player.y - colHeight));
+                        player.setDirection(player.getDirectionBuffer());
+                    }
+                    break;
+                }
+                case DOWN:{
+                    if(map.getTile(player.x , player.y + colHeight).type != Sprite.SpriteType.SOLID){
+                        player.move(map.getTile(player.x, player.y + colHeight));
+                        player.setDirection(player.getDirectionBuffer());
+                    }
+                    break;
+                }
+                case RIGHT:{
+                    if(map.getTile(player.x + colWidth, player.y).type != Sprite.SpriteType.SOLID){
+                        player.move(map.getTile(player.x + colWidth, player.y));
+                        player.setDirection(player.getDirectionBuffer());
+                    }
+                    break;
+                }
+            }
+
+
+        }
+
+        time += delta;
+        player.update(delta);
+
+        for(int i = 0; i < food.size(); i++){
+            if(food.get(i).isCollided(player)){
+                points += food.get(i).getValue();
+                food.remove(i);
+                sp.play(idEating,0.5f,0.5f, 1,0, 1);
+                if(food.isEmpty()){
+                    return 2;
+                }
+            }
+        }
+
+        for(Entity g : ghosts) {
+            if (g.isCollided(player)) {
+                return -1;
+            }
+
+            if(!g.isMoving()) {
+                switch (g.getDirectionBuffer()) {
+                    case LEFT: {
+                        if (map.getTile(g.x - colWidth, g.y).type != Sprite.SpriteType.SOLID) {
+                            g.move(map.getTile(g.x - colWidth, g.y));
+                            g.setDirection(g.getDirectionBuffer());
+                        }
+                        else{
+                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
                         }
                         break;
                     }
-                    case UP:{
-                        if(map.getTile(g.x, g.y - colHeight).type != Sprite.SpriteType.SOLID){
-                            g.move(Entity.direction.UP, map.getTile(g.x, g.y - colHeight));
+                    case UP: {
+                        if (map.getTile(g.x, g.y - colHeight).type != Sprite.SpriteType.SOLID) {
+                            g.move(map.getTile(g.x, g.y - colHeight));
+                            g.setDirection(g.getDirectionBuffer());
+                        }
+                        else{
+                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
                         }
                         break;
                     }
-                    case DOWN:{
-                        if(map.getTile(g.x , g.y + colHeight).type != Sprite.SpriteType.SOLID){
-                            g.move(Entity.direction.DOWN, map.getTile(g.x, g.y + colHeight));
+                    case DOWN: {
+                        if (map.getTile(g.x, g.y + colHeight).type != Sprite.SpriteType.SOLID) {
+                            g.move(map.getTile(g.x, g.y + colHeight));
+                            g.setDirection(g.getDirectionBuffer());
+                        }
+                        else{
+                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
                         }
                         break;
                     }
-                    case RIGHT:{
-                        if(map.getTile(g.x + colWidth, g.y).type != Sprite.SpriteType.SOLID){
-                            g.move(Entity.direction.RIGHT, map.getTile(g.x + colWidth, g.y));
+                    case RIGHT: {
+                        if (map.getTile(g.x + colWidth, g.y).type != Sprite.SpriteType.SOLID) {
+                            g.move(map.getTile(g.x + colWidth, g.y));
+                            g.setDirection(g.getDirectionBuffer());
+                        }
+                        else{
+                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
                         }
                         break;
                     }
                 }
-
-
             }
-
             g.update(delta);
-        }
 
+        }
+        return 1;
     }
 
 }

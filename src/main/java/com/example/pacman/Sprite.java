@@ -14,7 +14,7 @@ public class Sprite {
     protected PacmanView view;
     protected Bitmap bmp;
 
-    enum SpriteType {FLOOR, SOLID, FOOD, BIG_FOOD, PLAYER, GHOST}
+    enum SpriteType {FLOOR, SOLID, FOOD, PLAYER, GHOST}
 
     protected SpriteType type;
 
@@ -26,14 +26,6 @@ public class Sprite {
         this.width = width;
         this.height = height;
         this.type = type;
-    }
-
-    public void setX(int x){
-        this.x = x;
-    }
-
-    public void setY(int y){
-        this.y = y;
     }
 
     public int getX(){
@@ -52,6 +44,14 @@ public class Sprite {
     }
 
     public void draw(Canvas canvas){
-        canvas.drawBitmap(bmp, null, new Rect(x, y, width, height), null);
+        if(this.type == SpriteType.FLOOR) return;
+        canvas.drawBitmap(bmp, x, y, null);
+    }
+
+    public boolean isCollided(Sprite s){
+        return x < s.getX() + s.getWidth() &&
+                x + width > s.getX() &&
+                y < s.getY() + s.getHeight() &&
+                y + height > s.getY();
     }
 }
