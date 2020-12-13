@@ -48,10 +48,25 @@ public class Sprite {
         canvas.drawBitmap(bmp, x, y, null);
     }
 
-    public boolean isCollided(Sprite s){
-        return x < s.getX() + s.getWidth() &&
-                x + width > s.getX() &&
-                y < s.getY() + s.getHeight() &&
-                y + height > s.getY();
+    public boolean isCollided(Sprite s, boolean useCircle){
+        if(useCircle){
+            int tolerance = 10;
+            int r1 = s.width / 2 - tolerance;
+            int r2 = this.width / 2 - tolerance;
+
+            int x1 = s.x + s.width / 2;
+            int x2 = this.x + this.width / 2;
+
+            int y1 = s.y + s.height / 2;
+            int y2 = this.y + this.height / 2;
+
+            return (x2 - x1) * (x2 - x1) + (y1 - y2) * (y1 - y2) <= (r1 + r2) * (r1 + r2);
+        }
+        else{
+            return x < s.getX() + s.getWidth() &&
+                    x + width > s.getX() &&
+                    y < s.getY() + s.getHeight() &&
+                    y + height > s.getY();
+        }
     }
 }

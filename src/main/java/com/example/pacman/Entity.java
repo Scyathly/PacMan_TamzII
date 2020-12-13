@@ -19,6 +19,8 @@ public class Entity extends Sprite{
     private int targetX;
     private int targetY;
 
+    private double lastDirSwitch = 0;
+
     enum direction {
         UP,
         LEFT,
@@ -45,6 +47,7 @@ public class Entity extends Sprite{
     public void update(double delta) {
 
         this.animation.update(delta);
+        lastDirSwitch += delta;
 
         if(!moving) return;
 
@@ -82,9 +85,9 @@ public class Entity extends Sprite{
         this.dirBuffer = dir;
     }
 
-    public direction getDirection(){
-        return dir;
-    }
+    public double getLastDirSwitch() { return this.lastDirSwitch; }
+
+    public void setLastDirSwitch(double val) { this.lastDirSwitch = val; }
 
     public direction getDirectionBuffer(){
         return dirBuffer;

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -43,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(myIntent);
         });
 
+        Button clickButton4 = findViewById(R.id.btn4);
+        clickButton4.setOnClickListener(v -> {
+            finishAffinity();
+        });
+
     }
 
 
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void goFullscreen(AppCompatActivity v){
+        v.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         v.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         try

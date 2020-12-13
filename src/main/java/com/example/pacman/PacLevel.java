@@ -117,21 +117,36 @@ public class PacLevel {
                         mapTiles[num] = s;
 
                         if(level[num] == 2){
-                            Entity e = new Entity(view, bmp[2], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.GHOST);
-                            e.setAnimation(ghostRed,1000);
-                            ghosts.add(e);
-                        }
-                        else if(level[num] == 3){
-                            Entity e = new Entity(view, bmp[10], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.PLAYER);
+                            Entity e = new Entity(view, bmp[2], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.PLAYER);
                             e.setAnimation(pacman,300);
                             player = e;
                         }
+                        else if(level[num] == 3){
+                            Entity e = new Entity(view, bmp[0], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.GHOST);
+                            e.setAnimation(ghostRed,1000);
+                            ghosts.add(e);
+                        }
                         else if(level[num] == 4){
-                            Food f = new Food(view, bmp[new Random().nextInt(16 - 13 + 1) + 13], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.FOOD, 5);
-                            food.add(f);
+                            Entity e = new Entity(view, bmp[0], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.GHOST);
+                            e.setAnimation(ghostBlue,1000);
+                            ghosts.add(e);
                         }
                         else if(level[num] == 5){
+                            Entity e = new Entity(view, bmp[0], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.GHOST);
+                            e.setAnimation(ghostGreen,1000);
+                            ghosts.add(e);
+                        }
+                        else if(level[num] == 6){
+                            Entity e = new Entity(view, bmp[0], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.GHOST);
+                            e.setAnimation(ghostPurple,1000);
+                            ghosts.add(e);
+                        }
+                        else if(level[num] == 7){
                             Food f = new Food(view, bmp[17], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.FOOD, 1);
+                            food.add(f);
+                        }
+                        else if(level[num] == 8){
+                            Food f = new Food(view, bmp[new Random().nextInt(16 - 13 + 1) + 13], j*tileWidth,i*tileHeight,tileWidth, tileHeight, Sprite.SpriteType.FOOD, 5);
                             food.add(f);
                         }
                     }

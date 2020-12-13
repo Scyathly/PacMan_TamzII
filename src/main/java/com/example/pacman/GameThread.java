@@ -9,10 +9,8 @@ public class GameThread extends Thread {
     private boolean running = false;
 
     private long lastLoopTime = System.nanoTime();
-    private final int TARGET_FPS = 60;
-    private final long OPTIMAL_TIME = 1_000_000_000 / TARGET_FPS;
-    private double lastFpsTime = 0;
-    private double fps = 0;
+    private final int target_fps = 60;
+    private final long optimal_time = 1_000_000_000 / target_fps;
 
     public GameThread(PacmanView view){
         this.view = view;
@@ -32,16 +30,6 @@ public class GameThread extends Thread {
             long updateLength = now - lastLoopTime;
             lastLoopTime = now;
             double delta = updateLength;
-
-            lastFpsTime += updateLength;
-            fps++;
-
-            if (lastFpsTime >= 1_000_000_000)
-            {
-                Log.d("(FPS",fps + ")   (Frame Time " + delta / 1_000_000 +"ms)");
-                lastFpsTime = 0;
-                fps = 0;
-            }
 
             int state = view.update(delta / 1_000_000);
 
@@ -68,7 +56,7 @@ public class GameThread extends Thread {
             }
 
             try {
-                if(((lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1_000_000) > 0) Thread.sleep( (lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1_000_000 );
+                if(((lastLoopTime-System.nanoTime() + optimal_time)/1_000_000) > 0) Thread.sleep( (lastLoopTime-System.nanoTime() + optimal_time)/1_000_000 );
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -7,17 +7,26 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/btn4"
+        android:layout_width="160dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="52dp"
+        android:text="Exit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn3" />
+
+    <Button
         android:id="@+id/btn3"
         android:layout_width="160dp"
         android:layout_height="65dp"
         android:layout_marginTop="52dp"
         android:text="High Scores"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn2"
-        app:layout_constraintVertical_bias="0.031" />
+        app:layout_constraintTop_toBottomOf="@+id/btn2" />
 
     <Button
         android:id="@+id/btn2"

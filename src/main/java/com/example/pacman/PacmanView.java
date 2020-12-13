@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.SoundPool;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
+import java.io.Console;
 import java.util.ArrayList;
 
 public class PacmanView extends SurfaceView {
@@ -33,9 +35,7 @@ public class PacmanView extends SurfaceView {
     private PacLevel map;
 
     private ArrayList<Entity> ghosts;
-
     private ArrayList<Food> food;
-
     private Entity player;
 
     private double time = 0;
@@ -215,7 +215,7 @@ public class PacmanView extends SurfaceView {
         player.update(delta);
 
         for(int i = 0; i < food.size(); i++){
-            if(food.get(i).isCollided(player)){
+            if(food.get(i).isCollided(player, false)){
                 points += food.get(i).getValue();
                 food.remove(i);
                 sp.play(idEating,0.5f,0.5f, 1,0, 1);
@@ -226,56 +226,61 @@ public class PacmanView extends SurfaceView {
         }
 
         for(Entity g : ghosts) {
-            if (g.isCollided(player)) {
+            if (g.isCollided(player, true)) {
                 return -1;
             }
 
             if(!g.isMoving()) {
-                switch (g.getDirectionBuffer()) {
-                    case LEFT: {
-                        if (map.getTile(g.x - colWidth, g.y).type != Sprite.SpriteType.SOLID) {
-                            g.move(map.getTile(g.x - colWidth, g.y));
-                            g.setDirection(g.getDirectionBuffer());
+                if(g.getLastDirSwitch() > 1500){
+                    g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                    g.setLastDirSwitch(0);
+                }
+                else{
+                    switch (g.getDirectionBuffer()) {
+                        case LEFT: {
+                            if (map.getTile(g.x - colWidth, g.y).type != Sprite.SpriteType.SOLID)  {
+                                g.move(map.getTile(g.x - colWidth, g.y));
+                                g.setDirection(g.getDirectionBuffer());
+                            }
+                            else{
+                                g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                            }
+                            break;
                         }
-                        else{
-                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                        case UP: {
+                            if (map.getTile(g.x, g.y - colHeight).type != Sprite.SpriteType.SOLID) {
+                                g.move(map.getTile(g.x, g.y - colHeight));
+                                g.setDirection(g.getDirectionBuffer());
+                            }
+                            else{
+                                g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case UP: {
-                        if (map.getTile(g.x, g.y - colHeight).type != Sprite.SpriteType.SOLID) {
-                            g.move(map.getTile(g.x, g.y - colHeight));
-                            g.setDirection(g.getDirectionBuffer());
+                        case DOWN: {
+                            if (map.getTile(g.x, g.y + colHeight).type != Sprite.SpriteType.SOLID) {
+                                g.move(map.getTile(g.x, g.y + colHeight));
+                                g.setDirection(g.getDirectionBuffer());
+                            }
+                            else{
+                                g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                            }
+                            break;
                         }
-                        else{
-                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                        case RIGHT: {
+                            if (map.getTile(g.x + colWidth, g.y).type != Sprite.SpriteType.SOLID) {
+                                g.move(map.getTile(g.x + colWidth, g.y));
+                                g.setDirection(g.getDirectionBuffer());
+                            }
+                            else{
+                                g.setDirectionBuffer(Entity.direction.getRandomDirection());
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case DOWN: {
-                        if (map.getTile(g.x, g.y + colHeight).type != Sprite.SpriteType.SOLID) {
-                            g.move(map.getTile(g.x, g.y + colHeight));
-                            g.setDirection(g.getDirectionBuffer());
-                        }
-                        else{
-                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
-                        }
-                        break;
-                    }
-                    case RIGHT: {
-                        if (map.getTile(g.x + colWidth, g.y).type != Sprite.SpriteType.SOLID) {
-                            g.move(map.getTile(g.x + colWidth, g.y));
-                            g.setDirection(g.getDirectionBuffer());
-                        }
-                        else{
-                            g.setDirectionBuffer(Entity.direction.getRandomDirection());
-                        }
-                        break;
                     }
                 }
             }
             g.update(delta);
-
         }
         return 1;
     }
