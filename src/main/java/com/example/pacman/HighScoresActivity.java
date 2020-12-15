@@ -32,9 +32,7 @@ public class HighScoresActivity extends AppCompatActivity {
 
     private void loadListView() {
 
-        List<String> names = new ArrayList<>(Arrays.asList(Levels.getLevelNames()));
-
-        List<String> display = new ArrayList<>();
+        List<String> names = PacLevel.getLevelNames(getApplicationContext());
 
         ScoreUpdater su = new ScoreUpdater(getApplicationContext());
 
@@ -42,12 +40,9 @@ public class HighScoresActivity extends AppCompatActivity {
         highScoresList.setAdapter(highScoresListAdapter);
 
         for(int i = 0; i < names.size();i++){
-            HighScore h = su.getScore(Levels.getName(i));
-
+            HighScore h = su.getScore(names.get(i));
             highScoresListAdapter.add(h);
         }
-
-
 
     }
 }

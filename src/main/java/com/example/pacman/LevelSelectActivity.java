@@ -32,7 +32,7 @@ public class LevelSelectActivity extends AppCompatActivity {
 
     private void loadListView() {
 
-        List<String> names = new ArrayList<String>(Arrays.asList(Levels.getLevelNames()));
+        List<String> names = PacLevel.getLevelNames(getApplicationContext());
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
 
@@ -40,7 +40,7 @@ public class LevelSelectActivity extends AppCompatActivity {
 
         levels.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent();
-            intent.putExtra("levelName", Levels.getName(position));
+            intent.putExtra("levelName", names.get(position));
             setResult(RESULT_OK, intent);
             finish();
         });
