@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -14,8 +15,11 @@ public class GameActivity extends AppCompatActivity {
         MainActivity.goFullscreen(this);
 
         Intent intent = getIntent();
-        int levelNumber = intent.getIntExtra("LevelNumber", 0);
+        String levelName = intent.getStringExtra("levelName");
+        if(levelName == null){
+            levelName = "Level 1";
+        }
 
-        setContentView(new PacmanView(this, levelNumber));
+        setContentView(new PacmanView(this, levelName));
     }
 }

@@ -10,10 +10,7 @@ import android.media.SoundPool;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import androidx.annotation.NonNull;
-
-import java.io.Console;
 import java.util.ArrayList;
 
 public class PacmanView extends SurfaceView {
@@ -21,13 +18,15 @@ public class PacmanView extends SurfaceView {
     private SurfaceHolder holder;
     private GameThread mainThread;
 
-    private int levelNumber;
+    private String levelName;
 
     private int MapRows = 20;
     private int MapCols = 10;
 
     private SoundPool sp;
     private int idEating;
+    private int idWin;
+    private int idLose;
 
     private int colWidth;
     private int colHeight;
@@ -45,10 +44,10 @@ public class PacmanView extends SurfaceView {
     PacmanView p;
 
     @SuppressLint("ClickableViewAccessibility")
-    public PacmanView(Context context, int levelNumber) {
+    public PacmanView(Context context, String levelName) {
         super(context);
 
-        this.levelNumber = levelNumber;
+        this.levelName = levelName;
 
         mainThread = new GameThread(this);
 
@@ -59,9 +58,11 @@ public class PacmanView extends SurfaceView {
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
 
                 sp = new SoundPool.Builder().setMaxStreams(4).build();
-                idEating = sp.load(context, R.raw.munch, 1);
+                idEating = sp.load(context, R.raw.munch, 2);
+                idWin = sp.load(context, R.raw.game_win, 1);
+                idLose = sp.load(context, R.raw.game_over, 1);
 
-                map = new PacLevel(p, colWidth, colHeight, levelNumber);
+                map = new PacLevel(p, colWidth, colHeight, levelName);
                 ghosts = map.getGhosts();
                 food = map.getFood();
                 player = map.getPlayer();
@@ -142,10 +143,17 @@ public class PacmanView extends SurfaceView {
     public void endGame(Canvas canvas, boolean won){
         drawEnd(canvas, won);
 
+        if(won){
+            sp.play(idWin,0.5f,0.5f, 1,0, 1);
+        }
+        else{
+            sp.play(idLose,0.5f,0.5f, 1,0, 1);
+        }
+
         ScoreUpdater su = new ScoreUpdater(getContext());
 
         double roundedTime = (double) Math.round(time /1000 * 100) / 100;
-        su.updateScore(points, roundedTime, levelNumber);
+        su.updateScore(points, roundedTime, levelName);
     }
 
     public void drawEnd(Canvas canvas, boolean won){

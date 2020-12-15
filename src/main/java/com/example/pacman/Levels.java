@@ -1,4 +1,5 @@
 package com.example.pacman;
+import java.util.Arrays;
 
 public final class Levels {
 
@@ -106,5 +107,14 @@ public final class Levels {
 
     public static int[] getLevel(int num){
         return levels[num];
+    }
+
+    public static int[] getLevel(String levelName){
+        int num = Arrays.asList(levelNames).indexOf(levelName);
+        return levels[num];
+    }
+
+    public static String getName(int num){
+        return levelNames[num];
     }
 }

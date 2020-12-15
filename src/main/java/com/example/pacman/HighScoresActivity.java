@@ -38,21 +38,16 @@ public class HighScoresActivity extends AppCompatActivity {
 
         ScoreUpdater su = new ScoreUpdater(getApplicationContext());
 
+        HighScoreListAdapter highScoresListAdapter = new HighScoreListAdapter(this, R.layout.high_score_list_item);
+        highScoresList.setAdapter(highScoresListAdapter);
+
         for(int i = 0; i < names.size();i++){
-            String text = names.get(i) + " : ";
-            int score = su.getScore(i);
-            double time = (double) Math.round(su.getTime(i) * 100) / 100;
-            if(score == -1 || time == -1){
-                text += "Not played yet";
-            }
-            else{
-                text += "Points : " + score + ", Time: " + time;
-            }
-            display.add(text);
+            HighScore h = su.getScore(Levels.getName(i));
+
+            highScoresListAdapter.add(h);
         }
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, display);
 
-        highScoresList.setAdapter(arrayAdapter);
+
     }
 }

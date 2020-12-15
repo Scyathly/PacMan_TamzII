@@ -14,7 +14,7 @@ public class PacLevel {
     private final PacmanView view;
     private final Bitmap[] bmp;
 
-    private int levelNumber;
+    private String levelName;
 
     private final int MapRows = 20;
     private final int MapCols = 10;
@@ -28,12 +28,12 @@ public class PacLevel {
     private ArrayList<Food> food;
     private Entity player;
 
-    public PacLevel(PacmanView view, int tileWidth, int tileHeight, int levelNumber){
+    public PacLevel(PacmanView view, int tileWidth, int tileHeight, String levelName){
         this.view = view;
         this.tileHeight = tileHeight;
         this.tileWidth = tileWidth;
         this.bmp = new Bitmap[20];
-        this.levelNumber = levelNumber;
+        this.levelName = levelName;
 
         constructMap();
     }
@@ -87,7 +87,7 @@ public class PacLevel {
     public void constructMap(){
         loadBitmaps();
 
-        int[] level = Levels.getLevel(levelNumber);
+        int[] level = Levels.getLevel(levelName);
 
         ghosts = new ArrayList<>();
         food = new ArrayList<>();

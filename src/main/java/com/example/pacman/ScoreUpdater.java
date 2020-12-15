@@ -2,43 +2,39 @@ package com.example.pacman;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class ScoreUpdater {
 
-    private String prefName = "PacMan_Score";
     private Context ctx;
-    private SharedPreferences sp;
+    private DBHelper db;
 
     public ScoreUpdater(Context ctx){
         this.ctx = ctx;
-        sp = ctx.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        this.db = new DBHelper(ctx);
     }
 
-    public void updateScore(int score, double time, int levelNumber){
-        int scoreSP = getScore(levelNumber);
-        double timeSP = getTime(levelNumber);
+    public void updateScore(int score, double time, String levelName){
+        HighScore hs = db.getScore(levelName);
 
-        if(     (scoreSP == -1) ||
-                (scoreSP < score) ||
-                (scoreSP == score && time < timeSP)  ){
-            saveScore(score, time, levelNumber);
+        if(     (hs.getPoints() == -1) ||
+                (hs.getPoints() < score) ||
+                (hs.getPoints() == score && time < hs.getTime())  ){
+            saveScore(new HighScore(levelName, score, time));
         }
-
     }
 
-    private void saveScore(int score, double time, int levelNumber){
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putInt("level_" + levelNumber + "_points", score);
-        editor.putFloat("level_" + levelNumber + "_time", (float)time);
-        editor.apply();
+    private void saveScore(HighScore hs){
+        if(db.dataExists(hs.getLevelName())){
+            db.updateScore(hs);
+        }
+        else{
+            db.insertScore(hs);
+        }
     }
 
-    public int getScore(int levelNumber){
-        return sp.getInt("level_" + levelNumber + "_points", -1);
-    }
-
-    public double getTime(int levelNumber){
-        return sp.getFloat("level_" + levelNumber + "_time", -1);
+    public HighScore getScore(String levelName){
+        return db.getScore(levelName);
     }
 
 }

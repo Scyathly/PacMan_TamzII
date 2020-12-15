@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,7 +16,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE = 1;
-    private int levelNumber = 0;
+    private String levelName = "Level 1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         Button clickButton1 = findViewById(R.id.btn1);
         clickButton1.setOnClickListener(v -> {
             Intent myIntent = new Intent(MainActivity.this, GameActivity.class);
-            myIntent.putExtra("LevelNumber", levelNumber);
+            myIntent.putExtra("levelName", levelName);
             startActivity(myIntent);
         });
 
@@ -51,22 +52,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                levelNumber = data.getIntExtra("LevelNumber", 0);
+                levelName = data.getStringExtra("levelName");
+                if(levelName == null){
+                    levelName = "Level 1";
+                }
             }
         }
     }
 
     public static void goFullscreen(AppCompatActivity v){
         v.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        v.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        v.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         try
         {
             v.getSupportActionBar().hide();

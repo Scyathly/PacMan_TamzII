@@ -4,8 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -41,7 +40,7 @@ public class LevelSelectActivity extends AppCompatActivity {
 
         levels.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent();
-            intent.putExtra("LevelNumber", position);
+            intent.putExtra("levelName", Levels.getName(position));
             setResult(RESULT_OK, intent);
             finish();
         });
