@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <map>
-    <name>Level 1</name>
+    <name>Test Level</name>
     <row>SOLID, SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID</row>
     <row>SOLID, FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  GHOST_R,SOLID</row>
     <row>SOLID, FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  SOLID</row>

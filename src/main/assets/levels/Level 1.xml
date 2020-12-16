@@ -2,7 +2,7 @@
 <map>
     <name>Level 1</name>
     <row>SOLID, SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID</row>
-    <row>SOLID, FOOD_B, GHOST_R,SOLID,  FLOOR,  FLOOR,  SOLID,  GHOST_P,FOOD_B, SOLID</row>
+    <row>SOLID, FOOD_B, GHOST_R,SOLID,  FOOD,   FOOD,   SOLID,  GHOST_P,FOOD_B, SOLID</row>
     <row>SOLID, FOOD,   FOOD,   SOLID,  FOOD,   FOOD,   SOLID,  FOOD,   FOOD,   SOLID</row>
     <row>SOLID, FOOD,   FOOD,   SOLID,  FOOD,   FOOD,   SOLID,  FOOD,   FOOD,   SOLID</row>
     <row>SOLID, FOOD,   FOOD,   SOLID,  FOOD,   FOOD,   SOLID,  FOOD,   FOOD,   SOLID</row>
@@ -11,7 +11,7 @@
     <row>SOLID, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   SOLID</row>
     <row>SOLID, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   SOLID</row>
     <row>SOLID, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   SOLID</row>
-    <row>SOLID, PLAYER, FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  FLOOR,  SOLID</row>
+    <row>SOLID, PLAYER, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,  SOLID</row>
     <row>SOLID, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   SOLID</row>
     <row>SOLID, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   SOLID</row>
     <row>SOLID, FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   FOOD,   SOLID</row>

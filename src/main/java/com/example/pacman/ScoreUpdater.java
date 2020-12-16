@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class ScoreUpdater {
 
     private Context ctx;
@@ -16,7 +18,7 @@ public class ScoreUpdater {
 
     public void updateScore(int score, double time, String levelName){
         HighScore hs = db.getScore(levelName);
-
+        ArrayList<HighScore> sc = db.getScoreList();
         if(     (hs.getPoints() == -1) ||
                 (hs.getPoints() < score) ||
                 (hs.getPoints() == score && time < hs.getTime())  ){

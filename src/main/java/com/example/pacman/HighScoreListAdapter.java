@@ -51,23 +51,22 @@ public class HighScoreListAdapter extends ArrayAdapter<HighScore> {
                 nameStr = levelNames.get(position);
             }
             if(h.getPoints() == -1){
-                pointsStr = "Not Played";
+                pointsStr = "0";
             }
             else{
                 pointsStr = Integer.toString(h.getPoints());
             }
 
             if(h.getTime() == -1){
-                timeStr = "Not Played";
+                timeStr = "0";
             }
             else{
                 timeStr = Double.toString(h.getTime()) + " s";
             }
 
-
             name.setText(nameStr);
             points.setText("Points: " + pointsStr);
-            time.setText("Time: " + timeStr);
+            time.setText(  "Time:   " + timeStr);
 
         }
         return v;

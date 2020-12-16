@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.Log;
 
 import org.w3c.dom.Document;
@@ -266,6 +267,29 @@ public class PacLevel {
         int y1 = y / tileHeight;
 
         return mapTiles[x1 + MapCols * y1];
+    }
+
+    public Bitmap loadPreview(){
+        Bitmap bmp = Bitmap.createBitmap(tileWidth * MapCols, tileHeight * MapRows, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+
+        canvas.drawColor(Color.BLACK);
+
+        for (Sprite tile : mapTiles) {
+            tile.draw(canvas);
+        }
+
+        for(Entity ghost : ghosts){
+            ghost.draw(canvas);
+        }
+
+        for(Food food : food){
+            food.draw(canvas);
+        }
+
+        player.draw(canvas);
+
+        return bmp;
     }
 
 }

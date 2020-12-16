@@ -125,12 +125,10 @@ public class DBHelper extends SQLiteOpenHelper{
         return arrayList;
     }
 
-    public int removeAll()
+    public void removeAll()
     {
-        int nRecordDeleted = 0;
         SQLiteDatabase db = this.getWritableDatabase();
-        nRecordDeleted = db.delete("highScore", null, null);
-        return nRecordDeleted;
+        db.delete("highScore", null, null);
     }
 
 
