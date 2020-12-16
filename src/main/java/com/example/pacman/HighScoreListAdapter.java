@@ -7,15 +7,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class HighScoreListAdapter extends ArrayAdapter<HighScore> {
 
     private Context ctx;
     private int resourceLayout;
+    private List<String> levelNames;
 
     public HighScoreListAdapter(Context ctx, int resourceLayout){
         super(ctx, R.layout.high_score_list_item);
         this.ctx = ctx;
         this.resourceLayout = resourceLayout;
+        this.levelNames = PacLevel.getLevelNames(ctx);
+    }
+
+    public String getItemName(int position){
+        return levelNames.get(position);
     }
 
     @Override
@@ -39,6 +47,9 @@ public class HighScoreListAdapter extends ArrayAdapter<HighScore> {
             String pointsStr;
             String timeStr;
 
+            if(h.getLevelName() == null || h.getLevelName() == ""){
+                nameStr = levelNames.get(position);
+            }
             if(h.getPoints() == -1){
                 pointsStr = "Not Played";
             }
@@ -52,6 +63,7 @@ public class HighScoreListAdapter extends ArrayAdapter<HighScore> {
             else{
                 timeStr = Double.toString(h.getTime()) + " s";
             }
+
 
             name.setText(nameStr);
             points.setText("Points: " + pointsStr);

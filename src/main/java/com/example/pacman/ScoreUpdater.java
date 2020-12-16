@@ -37,4 +37,8 @@ public class ScoreUpdater {
         return db.getScore(levelName);
     }
 
+    public void deleteScore(String levelName){
+        db.deleteScore(levelName);
+    }
+
 }

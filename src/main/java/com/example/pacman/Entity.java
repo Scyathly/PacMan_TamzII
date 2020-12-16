@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class Entity extends Sprite{
 
-    private double speed = 8;
+    private double speed = 16;
     private boolean moving = false;
 
     private SpriteAnimation animation;

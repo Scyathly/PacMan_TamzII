@@ -2,6 +2,9 @@ package com.example.pacman;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +31,17 @@ public class HighScoresActivity extends AppCompatActivity {
 
         highScoresList = findViewById(R.id.highScoresList);
         loadListView();
+
+        highScoresList.setOnItemClickListener((parent, view, position, id) -> {
+            HighScoreListAdapter ha = (HighScoreListAdapter)highScoresList.getAdapter();
+            String name = ha.getItemName(position);
+
+            MyDialog dialog = new MyDialog(HighScoresActivity.this, name);
+            dialog.show();
+            loadListView();
+            ((HighScoreListAdapter) highScoresList.getAdapter()).notifyDataSetChanged();
+
+        });
     }
 
     private void loadListView() {
